@@ -41,7 +41,7 @@ class ASPP(nn.Module):
                                             atrous_block12,atrous_block18],dim=1))
         return net
         
-class Deeplab_v3(nn.Module):
+class Deeplab_v3+(nn.Module):
     def __init__(self,class_number=5):
         super().__init__()
         encoder=torchvision.models.resnet152()
@@ -81,8 +81,8 @@ class Deeplab_v3(nn.Module):
         return score
         
         
-def deeplab_v3(class_number=5):
-    model=Deeplab_v3(class_number=class_number)
+def deeplab_v3+(class_number=5):
+    model=Deeplab_v3+(class_number=class_number)
     return model
 
 
