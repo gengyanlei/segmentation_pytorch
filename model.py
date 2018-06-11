@@ -7,6 +7,8 @@ import torch.nn.functional as F
 
 '''
 deeplab_v3+ : pytorch's resnet is not same with tensorflow's resnet,so we modify some params
+deeplab_v3+ : pytorch resnet 18/34 Basicblock
+                      resnet 50/101/152 Bottleneck
 '''
 class ASPP(nn.Module):
     def __init__(self,depth=256):
