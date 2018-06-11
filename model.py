@@ -50,16 +50,16 @@ class Deeplab_v3+(nn.Module):
         self.start=nn.Sequential(encoder.conv1,encoder.bn1,
                                  encoder.relu)
         self.maxpool=encoder.maxpool
-        self.encoder_feature=nn.Conv2d(64,48,1,1)
-        encoder.layer1[0].conv2.stride=(2,2)#########modify###########
+        self.encoder_feature=nn.Sequential(nn.Conv2d(64,48,1,1),nn.ReLU(inplace=True))
+        encoder.layer1[0].conv2.stride=(2,2)###########modify#########
         encoder.layer1[0].downsample[0].stride=(2,2)#######modify########
         self.layer1=encoder.layer1
         self.layer2=encoder.layer2
         self.aspp=ASPP()
-        self.conv_cat=nn.Conv2d(256+48,256,3,1,padding=1)
-        self.score=nn.Conv2d(256,class_number,1,1)
-        
-        
+        self.conv_a=nn.Sequential(nn.Conv2d(256,256,1,1),nn.ReLU(inplace=True))
+        self.conv_cat=nn.Sequential(nn.Conv2d(256+48,256,3,1,padding=1),nn.ReLU(inplace=True))
+        self.conv_cat1=nn.Sequential(nn.Conv2d(256,256,3,1,padding=1),nn.ReLU(inplace=True))
+        self.score=nn.Conv2d(256,class_number,1,1)# no relu
 #        self.layer3=encoder.layer3
 #        self.layer4=encoder.layer4
         
@@ -68,17 +68,18 @@ class Deeplab_v3+(nn.Module):
         x=self.start(x)
         xm=self.maxpool(x)
         x=self.layer1(xm)
-        #print(x.shape)
         x=self.layer2(x)
 #        x=self.layer3(x)
 #        x=self.layer4(x)
         x=self.aspp(x)
+        x=self.conv_a(x)
         encoder_feature=self.encoder_feature(xm)
         size2=encoder_feature.shape[2:]
         decoder_feature=F.upsample(x,size=size2,mode='bilinear',align_corners=True)
         
         conv_cat=self.conv_cat(torch.cat([encoder_feature,decoder_feature],dim=1))
-        score_conv=F.upsample(conv_cat,size=size1,mode='bilinear',align_corners=True)
+        conv_cat1=self.conv_cat1(conv_cat)
+        score_conv=F.upsample(conv_cat1,size=size1,mode='bilinear',align_corners=True)
         score=self.score(score_conv)
         return score
         
