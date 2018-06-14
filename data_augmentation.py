@@ -22,8 +22,8 @@ s_img_path=r'/home/*/*/Dataset/ADE/HDF5/image'#save image
 s_lab_path=r'/home/*/*/Dataset/ADE/HDF5/label'
 
 def first_data_augmen(image,label):# first
-    randint=random.randint(0,2)
-    if randint==1:
+    randint=random.randint(0,4)
+    if randint==2:
         f_scale=0.5+random.randint(0,10)/10
         image=cv2.resize(image,(0,0),fx=f_scale,fy=f_scale)
         label=cv2.resize(label,(0,0),fx=f_scale,fy=f_scale,interpolation=cv2.INTER_NEAREST)
