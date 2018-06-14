@@ -81,9 +81,9 @@ for i in range(num):
     print(name)
     label=cv2.imread(os.path.join(train_lab_path,name),-1)
     for j in range(5):
-        image,label=first_data_augmen(image,label)# random scale size
-        image,label=middle_data_augmen(image,label)# random crop 
-        img,lab=final_data_augmen(image,label)# random flip rotation or normal
+        image_f,label_f=first_data_augmen(image,label)# random scale size
+        image_m,label_m=middle_data_augmen(image_f,label_f)# random crop 
+        img,lab=final_data_augmen(image_m,label_m)# random flip rotation or normal
         if lab.max()>150:
             print('########################')
             break
