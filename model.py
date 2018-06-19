@@ -11,16 +11,16 @@ deeplab_v3+ : pytorch resnet 18/34 Basicblock
                       resnet 50/101/152 Bottleneck
 '''
 class ASPP(nn.Module):
-    def __init__(self,depth=256):
+    def __init__(self,in_channel=512,depth=256):
         super().__init__()
         # global average pooling : init nn.AdaptiveAvgPool2d ;also forward torch.mean(,,keep_dim=True)
         self.mean=nn.AdaptiveAvgPool2d((1,1))
-        self.conv=nn.Conv2d(512,depth,1,1)
+        self.conv=nn.Conv2d(in_channel,depth,1,1)
         # k=1 s=1 no pad
-        self.atrous_block1=nn.Conv2d(512,depth,1,1)
-        self.atrous_block6=nn.Conv2d(512,depth,3,1,padding=6,dilation=6)
-        self.atrous_block12=nn.Conv2d(512,depth,3,1,padding=12,dilation=12)
-        self.atrous_block18=nn.Conv2d(512,depth,3,1,padding=18,dilation=18)
+        self.atrous_block1=nn.Conv2d(in_channel,depth,1,1)
+        self.atrous_block6=nn.Conv2d(in_channel,depth,3,1,padding=6,dilation=6)
+        self.atrous_block12=nn.Conv2d(in_channel,depth,3,1,padding=12,dilation=12)
+        self.atrous_block18=nn.Conv2d(in_channel,depth,3,1,padding=18,dilation=18)
         
         self.conv_1x1_output=nn.Conv2d(depth*5,depth,1,1)
         
