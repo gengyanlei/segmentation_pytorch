@@ -39,13 +39,13 @@ def adjust_lr(optimizer,base_lr,iters,max_iter,power):
     optimizer.param_groups[0]['lr']=lr
     if len(optimizer.param_groups)>1:
         optimizer.param_groups[1]['lr']=lr*10
-def get_1x_params(net):
+def get_1x_params(net):      ########详细教程请看本人的Pytorch-Tutorial-mnist##########
     b=[net.conv1,net.conv2,net.conv3,net.conv4,net.conv5]
     for i in b:
         for j in i.modules():
             for k in j.parameters():
                 yield k
-def get_10x_params(net):
+def get_10x_params(net):      ########详细教程请看本人的Pytorch-Tutorial-mnist##########
     b=[net.center,net.dec5,net.dec4,net.dec3,net.dec2,net.dec1,net.score]
     for i in b:
         for j in i.modules():
@@ -112,6 +112,7 @@ for iters in range(max_iter):
         # test image
         '''
         test_path=r'...'
+        pre_path=r'...'
         names=os.listdir(test_path)
         for i in range(len(names)):
             img=Image.open(os.path.join(test_path,names[i]))
