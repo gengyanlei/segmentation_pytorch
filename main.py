@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import torch.nn.functional as F
 from PIL import Image#######pytorch 默认读取图片########
 
-import deeplab_v3_50
+from deeplab_v3_50 import deeplab_v3_50
 import batch_data
 
 # Hyper parameter 
