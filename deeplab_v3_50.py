@@ -77,7 +77,8 @@ class Deeplab_v3(nn.Module):
         
         conv_cat=self.conv_cat(torch.cat([encoder_feature,decoder_feature],dim=1))
         conv_cat1=self.conv_cat1(conv_cat)
-        score_conv=F.upsample(conv_cat1,size=size1,mode='bilinear',align_corners=True)
+        score_conv=F.upsample(conv_cat1,size=size1,mode='bilinear',align_corners=True)#偶然发现，upsample可以放在self.score后面，减少训练时显存使用
+        ##建议以后凡是最后一层前面是upsample，最后一层为转类别概率层，将upsample层和最后一层互换位置，减少使用显存##
         score=self.score(score_conv)
         return score
         
