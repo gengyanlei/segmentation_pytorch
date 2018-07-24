@@ -45,8 +45,13 @@ class Deeplab_v3(nn.Module):
     def __init__(self,class_number=5):
         super().__init__()
         encoder=torchvision.models.resnet50(pretrained=True)
-        self.start=nn.Sequential(encoder.conv1,encoder.bn1,
-                                 encoder.relu)
+        
+        #self.start=nn.Sequential(encoder.conv1,encoder.bn1,
+        #                         encoder.relu)
+        # (7,2,3)=>(3,1,1)+(3,1,1)+(3,2,1) 修改之处  这里会使网络深，参数减少。
+        self.start=nn.Sequential(nn.Conv2d(3,64,3,1,1),nn.ReLU(inplace=True),\
+                                 nn.Conv2d(64,64,3,1,1),nn.ReLU(inplace=True),\
+                                 nn.Conv2d(64,64,3,2,1),nn.ReLU(inplace=True))
         self.maxpool=encoder.maxpool
         self.layer1=encoder.layer1
         ##########
