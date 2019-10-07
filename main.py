@@ -111,6 +111,7 @@ for iters in range(max_iter):
     if iters%1000==0 and iters!=0:
         # test image
         '''
+        model.eval()  # 建议每个epoch训练完后，再进行整个epoch的测试精度计算，同时注意trian eval模式。也可以使用 with torch.no_grad():
         test_path=r'...'
         pre_path=r'...'
         names=os.listdir(test_path)
@@ -128,6 +129,7 @@ for iters in range(max_iter):
         '''
         np.save(loss_s_path,loss_npy_10)
         torch.save(model.state_dict(),model_s_path)
+        model.train()
 np.save(loss_s_path,loss_npy_10)
 torch.save(model.state_dict(),model_s_path)
 
