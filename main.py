@@ -69,7 +69,7 @@ model=deeplab_v3_50(class_number)
 #new_params.update(pretrain_dict)
 #model.load_state_dict(new_params)
 
-model.train()
+model.train()  # 与.cuda() 顺序不是固定的
 model.cuda()
 
 optimizer=torch.optim.Adam(model.parameters(),lr=lr,betas=(0.9,0.99),weight_decay=weight_decay)
