@@ -51,8 +51,16 @@ class Data(data.Dataset):
    # The input image and the label image need to be synchronized, such as rotation, flipping, and the like.
 
     ''' classification '''
-   # transform
+
     '''
+        ## 建议，在图像分类中，输入一般是H=W的，而真实图片不一定是正方形，因此先加入padding再进行transform，加入padding采用cv2，
+        ## 并且加入的padding值是边缘复制，代码如下：
+        H, W, C = img.shape
+        max_length = max(H,W)
+        top_size, bottom_size, left_size, right_size = (int((max_length-H)/2), int(np.ceil((max_length-H)/2)), int((max_length-W)/2), int(np.ceil((max_length-W)/2)))
+        replicate = cv2.copyMakeBorder(img, top_size, bottom_size, left_size, right_size, borderType=cv2.BORDER_REPLICATE)
+        
+        # transform
         if self.phase == 'train':
             self.transform = transforms.Compose([
                 transforms.Resize(size=(self.shape[0], self.shape[1])),
