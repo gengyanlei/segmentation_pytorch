@@ -14,3 +14,5 @@ pytorch deeplab_v3+
 
 Pytorch 有自己的可视化工具：visdom  （pip install visdom即可）
 主函数写的一般，没有采用argparse模块。
+
+新增数据增强代码！！！
