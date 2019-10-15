@@ -64,19 +64,11 @@ class Data(data.Dataset):
         if self.phase == 'train':
             self.transform = transforms.Compose([
                 transforms.Resize(size=(self.shape[0], self.shape[1])),
-                # 可继续加入 旋转...等操作
+                # 可继续加入 旋转 随机裁剪等操作，设置概率
                 transforms.RandomHorizontalFlip(p=0.5),
                 transforms.RandomApply( [transforms.ColorJitter(brightness=0.4,
                                        contrast=0.4,
                                        saturation=0.4,
                                        hue=0.2)], p=0.5),  #特别注意这里，颜色变化基本上使得网络学习不到原始图像，因此对其设置p=0.5的概率执行此操作#
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-            ])
-        else:
-            self.transform = transforms.Compose([
-                transforms.Resize(size=(self.shape[0], self.shape[1])),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-            ])
-    '''
+                transforms.Normalize(mean=[0.485, 0.456, 0.40
