@@ -71,4 +71,10 @@ class Data(data.Dataset):
                                        saturation=0.4,
                                        hue=0.2)], p=0.5),  #特别注意这里，颜色变化基本上使得网络学习不到原始图像，因此对其设置p=0.5的概率执行此操作#
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.40
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                                     std=[0.229, 0.224, 0.225])
+                ])
+                
+                
+                
+                
