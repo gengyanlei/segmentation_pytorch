@@ -18,5 +18,6 @@ Pytorch 有自己的可视化工具：visdom  （pip install visdom即可）
 新增数据增强代码！！！
 
 分享 建筑物语义分割数据集：
-building-segmentation-dataset
+building-segmentation-dataset  
+
 https://github.com/gengyanlei/build_segmentation_dataset
