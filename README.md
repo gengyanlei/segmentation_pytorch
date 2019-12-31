@@ -13,6 +13,7 @@ pytorch deeplab_v3+
   pytorch : 0.4.0 ； python : 3.5
 
 Pytorch 有自己的可视化工具：visdom  （pip install visdom即可）
+pytorch1.1以上版本可以原生支持tensorboard: from torch.utils.tensorboard import summary
 主函数写的一般，没有采用argparse模块。
 
 新增数据增强代码！！！
