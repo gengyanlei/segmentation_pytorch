@@ -19,11 +19,12 @@
 ### Support Network
 - [x] deeplab_v3_plus
 
-TODO
-- [ ] pspnet
-- [ ] unet
-- [ ] HRNet
-- [ ] U^2Net
++ TODO
+- [ ] [pspnet](https://github.com/gengyanlei/PSPNet)
+- [ ] [unet](https://github.com/gengyanlei/U_Net)
+- [ ] [HF_FCN](https://github.com/gengyanlei/HED)
+- [ ] [HRNet](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/pytorch-v1.1)
+- [ ] [U^2Net](https://github.com/NathanUA/U-2-Net)
 - [ ] ...
 
 ### others
