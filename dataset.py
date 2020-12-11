@@ -40,11 +40,11 @@ class Data(data.Dataset):
         img=self.image[index]# cv2 bgr remenber all example are the same as 'index' h*w*c
         lab=self.label[index].argmax(axis=-1) # no one-hot 
         if self.augmentation:
-            img,lab=self.data_augmentation(img,lab)
+            img, lab = self.data_augmentation(img,lab)
         if self.transform is not None:
-            img=self.transform(img)# only totensor and normlize h*w*c=>c*h*w
+            img = self.transform(img)# only totensor and normlize h*w*c=>c*h*w
         
-        return img,np.int64(lab) # lab need int64=long
+        return img, np.int64(lab)  # lab need int64=long
     
     #########################################Data Augmentation#########################################################
     ''' Semantic segmentation '''
@@ -74,7 +74,7 @@ class Data(data.Dataset):
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                                      std=[0.229, 0.224, 0.225])
                 ])
-                
+    '''
                 
                 
                 

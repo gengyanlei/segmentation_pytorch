@@ -1,20 +1,20 @@
-# the author is leilei
+'''
+    author is leilei
+'''
 import os
 import cv2 # bgr
 import torch
 import random
-import torchvision
 from torchvision import transforms
 import numpy as np
 from torch import nn
-from torch.autograd import Variable
 from torch.utils import data
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 from PIL import Image#######pytorch 默认读取图片########
 
-from deeplab_v3_50 import deeplab_v3_50
-import batch_data
+from models import deeplab_v3_plus
+import dataset
 
 # Hyper parameter 
 batch_size=16
@@ -56,11 +56,11 @@ softmax_loss=nn.CrossEntropyLoss().cuda()# multi class
 
 # dataset
 img_transform=transforms.ToTensor()
-dataset=batch_data.Data(dataset_path,transform=img_transform)
+dataset=dataset.Data(dataset_path, transform=img_transform)
 trainloader=data.DataLoader(dataset,batch_size=batch_size,shuffle=True,num_workers=3)
 trainloader_iter=enumerate(trainloader)
 
-model=deeplab_v3_50(class_number)
+model=deeplab_v3_plus(class_number)
 
 # fine-tune
 #new_params=model.state_dict()
@@ -92,8 +92,8 @@ for iters in range(max_iter):
         _,batch=next(trainloader_iter)
     
     images,labels=batch
-    images=Variable(images).cuda()
-    labels=Variable(labels).cuda()
+    images = images.cuda()
+    labels = labels.cuda()
     
     pred=model(images)
     loss_seg=softmax_loss(pred,labels)

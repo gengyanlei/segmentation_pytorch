@@ -1,10 +1,9 @@
 """
-@author: leilei
+    code's author: leilei
 """
 
 import torch
 import torchvision
-import numpy as np
 from torch import nn
 import torch.nn.functional as F
 
@@ -20,10 +19,10 @@ class ASPP(nn.Module):
         super().__init__()
         # global average pooling : init nn.AdaptiveAvgPool2d ;also forward torch.mean(,,keep_dim=True)
         self.mean = nn.AdaptiveAvgPool2d((1,1))
-        self.conv = nn.Sequential(nn.Conv2d(in_channel,depth,1,1),nn.ReLU(inplace=True))
+        self.conv = nn.Sequential(nn.Conv2d(in_channel,depth,1,1), nn.ReLU(inplace=True))
         
         self.atrous_block1  = nn.Sequential(nn.Conv2d(in_channel,depth,1,1),
-                                           nn.ReLU(inplace=True))
+                                            nn.ReLU(inplace=True))
         self.atrous_block6  = nn.Sequential(nn.Conv2d(in_channel,depth,3,1,padding=6,dilation=6),
                                             nn.ReLU(inplace=True))
         self.atrous_block12 = nn.Sequential(nn.Conv2d(in_channel,depth,3,1,padding=12,dilation=12),
@@ -31,14 +30,14 @@ class ASPP(nn.Module):
         self.atrous_block18 = nn.Sequential(nn.Conv2d(in_channel,depth,3,1,padding=18,dilation=18),
                                             nn.ReLU(inplace=True))
         
-        self.conv_1x1_output= nn.Sequential(nn.Conv2d(depth*5,depth,1,1),nn.ReLU(inplace=True))
+        self.conv_1x1_output= nn.Sequential(nn.Conv2d(depth*5,depth,1,1), nn.ReLU(inplace=True))
         
     def forward(self,x):
         size = x.shape[2:]
 
         image_features = self.mean(x)
         image_features = self.conv(image_features)
-        image_features = F.upsample(image_features,size=size,mode='bilinear',align_corners=True)
+        image_features = F.upsample(image_features, size=size, mode='bilinear', align_corners=True)
         
         atrous_block1  = self.atrous_block1(x)
         
@@ -52,23 +51,23 @@ class ASPP(nn.Module):
                                             atrous_block12,atrous_block18],dim=1))
         return net
         
-class Deeplab_v3(nn.Module):
+class Deeplab_v3_plus(nn.Module):
     # in_channel = 3 fine-tune
-    def __init__(self,class_number=5, fine_tune=True):
+    def __init__(self, class_number=5, fine_tune=True, backbone='resnet50'):
         super().__init__()
-        encoder = torchvision.models.resnet50(pretrained=fine_tune)
-        self.start = nn.Sequential(encoder.conv1,encoder.bn1,
-                                 encoder.relu)
+        # 可选择resnet系列不同大小的网络
+        encoder = getattr(torchvision.models, backbone)(pretrained=fine_tune)
+        self.start = nn.Sequential(encoder.conv1, encoder.bn1, encoder.relu)
 
         self.maxpool = encoder.maxpool
         self.low_feature = nn.Sequential(nn.Conv2d(64,48,1,1),nn.ReLU(inplace=True)) # no bn, has bias and relu
         
-        self.layer1 = encoder.layer1#256
-        self.layer2 = encoder.layer2#512
-        self.layer3 = encoder.layer3#1024
-        self.layer4 = encoder.layer4#2048
+        self.layer1 = encoder.layer1  # 256
+        self.layer2 = encoder.layer2  # 512
+        self.layer3 = encoder.layer3  # 1024
+        self.layer4 = encoder.layer4  # 2048
         
-        self.aspp = ASPP(in_channel=2048, depth=256)
+        self.aspp = ASPP(in_channel=self.layer4[-1].conv1.in_channels, depth=256)
         
         self.conv_cat = nn.Sequential(nn.Conv2d(256+48,256,3,1,padding=1),nn.ReLU(inplace=True))
         self.conv_cat1 = nn.Sequential(nn.Conv2d(256,256,3,1,padding=1),nn.ReLU(inplace=True))
@@ -76,7 +75,7 @@ class Deeplab_v3(nn.Module):
         self.score = nn.Conv2d(256,class_number,1,1)# no relu and first conv then upsample, reduce memory
         
     def forward(self,x):
-        size1 = x.shape[2:]# need upsample input size
+        size1 = x.shape[2:]  # need upsample input size
         x  = self.start(x)
         xm = self.maxpool(x)
         
@@ -99,6 +98,6 @@ class Deeplab_v3(nn.Module):
         return score
         
         
-def deeplab_v3_50(class_number=5, fine_tune=True):
-    model=Deeplab_v3(class_number=class_number, fine_tune=fine_tune)
+def deeplab_v3_plus(class_number=5, fine_tune=True, backbone='resnet50'):
+    model=Deeplab_v3_plus(class_number=class_number, fine_tune=fine_tune, backbone=backbone)
     return model
