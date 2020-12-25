@@ -15,6 +15,18 @@
 
 + Test
 
++ Dataset
+这里要更新一下图像格式存放等！！！！！！！！！！
+```
+root：
+    images:  
+    labels: 
+    train.txt：
+        /home/dataset/seg/images/aaa.jpg
+        /home/dataset/seg/images/bbb.jpg
+    test.txt：
+        /home/dataset/seg/images/ccc.jpg
+```
 
 ### Support Network
 - [x] deeplab_v3_plus

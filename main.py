@@ -2,18 +2,14 @@
     author is leilei
 '''
 import os
-import cv2 # bgr
 import torch
-import random
 from torchvision import transforms
 import numpy as np
 from torch import nn
 from torch.utils import data
 import matplotlib.pyplot as plt
-import torch.nn.functional as F
-from PIL import Image#######pytorch 默认读取图片########
 
-from models import deeplab_v3_plus
+from models.models import *
 import dataset
 
 # Hyper parameter 

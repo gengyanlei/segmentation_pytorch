@@ -1,14 +1,11 @@
 import cv2
-import h5py
 import torch
 import random
 import torchvision
 from torchvision import transforms
 import numpy as np
-from torch import nn
-from torch.autograd import Variable
 from torch.utils import data
-
+# TODO mosaic and copy-paste
 class Data(data.Dataset):
     def __init__(self,dataset_path,transform=None,augmentation=True):
         self.hdf5=h5py.File(dataset_path,mode='r')
@@ -76,5 +73,4 @@ class Data(data.Dataset):
                 ])
     '''
                 
-                
-                
+

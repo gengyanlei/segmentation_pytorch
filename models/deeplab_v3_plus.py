@@ -15,7 +15,7 @@ deeplab_v3+ : pytorch resnet 18/34 Basicblock
 '''
 class ASPP(nn.Module):
     # have bias and relu, no bn
-    def __init__(self,in_channel=512,depth=256):
+    def __init__(self,in_channel=512, depth=256):
         super().__init__()
         # global average pooling : init nn.AdaptiveAvgPool2d ;also forward torch.mean(,,keep_dim=True)
         self.mean = nn.AdaptiveAvgPool2d((1,1))
@@ -97,7 +97,3 @@ class Deeplab_v3_plus(nn.Module):
         
         return score
         
-        
-def deeplab_v3_plus(class_number=5, fine_tune=True, backbone='resnet50'):
-    model=Deeplab_v3_plus(class_number=class_number, fine_tune=fine_tune, backbone=backbone)
-    return model
