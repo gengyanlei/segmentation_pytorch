@@ -32,9 +32,10 @@ root：
 - [x] deeplab_v3_plus
 
 + TODO
-- [ ] [pspnet](https://github.com/gengyanlei/PSPNet)
-- [ ] [unet](https://github.com/gengyanlei/U_Net)
-- [ ] [HF_FCN](https://github.com/gengyanlei/HED)
+- [ ] [pspnet](models/pspnet.py)
+- [ ] [unet](models/unet.py)
+- [ ] [spp-net](models/spp.py)
+- [ ] [HF_FCN](models/hed_series/hf_fcn_vgg16.py)
 - [ ] [HRNet](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/pytorch-v1.1)
 - [ ] [U^2Net](https://github.com/NathanUA/U-2-Net)
 - [ ] ...
