@@ -96,4 +96,4 @@ class Deeplab_v3_plus(nn.Module):
         score = F.upsample(score_small,size=size1,mode='bilinear',align_corners=True)
         
         return score
-        
+
