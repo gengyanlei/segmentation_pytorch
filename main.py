@@ -10,7 +10,7 @@ from torch.utils import data
 import matplotlib.pyplot as plt
 
 from models.models import *
-import dataset
+from utils import dataset
 
 # Hyper parameter 
 batch_size=16
@@ -52,7 +52,7 @@ softmax_loss=nn.CrossEntropyLoss().cuda()# multi class
 
 # dataset
 img_transform=transforms.ToTensor()
-dataset=dataset.Data(dataset_path, transform=img_transform)
+dataset= dataset.Data(dataset_path, transform=img_transform)
 trainloader=data.DataLoader(dataset,batch_size=batch_size,shuffle=True,num_workers=3)
 trainloader_iter=enumerate(trainloader)
 
