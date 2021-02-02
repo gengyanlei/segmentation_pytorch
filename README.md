@@ -49,22 +49,15 @@ data enhancement:
 - [x] [unet](models/unet.py)
 - [x] [spp-net](models/spp.py)
 - [x] [HF_FCN](models/hed_series/hf_fcn_vgg16.py)
-
 + TODO
 - [ ] torchvision.models.deeplab_v3
 - [ ] [HRNet](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/pytorch-v1.1)
 - [ ] [U^2Net](https://github.com/NathanUA/U-2-Net)
 - [ ] ...
 
-### Data Enhancement
-- [x] random flip
-- [x] random rotate
-- [x] random crop
-- [x] random noise
-- [x] hue-brightness-contrast-saturation
-- [x] zoom(in out)
-- [ ] ~~copy-paste?~~
-- [ ] mosaic?
+### Data Aug
++ [data-augumentations](./readmes/data_aug.md)
+
 
 ### others
 * [building-segmentation-dataset](https://github.com/gengyanlei/build_segmentation_dataset) 
