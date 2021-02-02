@@ -14,6 +14,7 @@ import torchvision.transforms.functional as tf
     author is leilei
     语义分割数据增强时，需将图像和标签图同时操作，对于旋转，偏移等操作，会引入黑边(均为0值)，
     将引入的黑边 视为1类，标签值默认为0，真实标签从1开始。
+    图像采用BILINEAR，标签图采用NEAREST
     目前采用 torchvision.transforms.functional 的API，此api与PIL的数据增强操作是一致的，只要转成PIL，均采用uint8
     https://pytorch.org/docs/1.6.0/torchvision/transforms.html#functional-transforms
 '''
@@ -42,8 +43,8 @@ class Augmentations:
         image = tf.rotate(image, angle)
         label = tf.rotate(label, angle)
 
-        image = tf.resize(image, self.input_hw)
-        label = tf.resize(label, self.input_hw)
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
@@ -55,8 +56,8 @@ class Augmentations:
             image = tf.vflip(image)
             label = tf.vflip(label)
 
-        image = tf.resize(image, self.input_hw)
-        label = tf.resize(label, self.input_hw)
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
@@ -64,8 +65,8 @@ class Augmentations:
     def random_resize_crop(self, image, label, scale=(0.3, 1.0), ratio=(1, 1)):
         # 等价于 随即裁剪+resize至指定大小，大部分为放大操作；
         i, j, h, w = transforms.RandomResizedCrop.get_params(image, scale=scale, ratio=ratio)  # 是在原图上 某个区域范围内(ratio控制区域长宽)随机裁剪
-        image = tf.resized_crop(image, i, j, h, w, self.input_hw)
-        label = tf.resized_crop(label, i, j, h, w, self.input_hw)
+        image = tf.resized_crop(image, i, j, h, w, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resized_crop(label, i, j, h, w, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
@@ -76,8 +77,8 @@ class Augmentations:
 
         factor = transforms.RandomRotation.get_params(scale)  # 等比例缩放，也可不等比例
         size = (int(in_hw[0]*factor), int(in_hw[1]*factor))
-        image = tf.resize(image, size)
-        label = tf.resize(label, size)
+        image = tf.resize(image, size, interpolation=Image.BILINEAR)
+        label = tf.resize(label, size,  interpolation=Image.NEAREST)
         # pad
         top_bottom = (self.input_hw[0] - size[0])
         left_right = (self.input_hw[1] - size[1])
@@ -107,20 +108,20 @@ class Augmentations:
             width, height = image.size
             startpoints, endpoints = transforms.RandomPerspective.get_params(width, height, 0.5)
             # 0值填充，仍是原始图像大小，需要resize
-            image = tf.perspective(image, startpoints, endpoints, interpolation=Image.BILINEAR, fill=self.fill)
-            label = tf.perspective(label, startpoints, endpoints, interpolation=Image.BILINEAR, fill=self.fill)
+            image = tf.perspective(image, startpoints, endpoints, interpolation=Image.BICUBIC, fill=self.fill)
+            label = tf.perspective(label, startpoints, endpoints, interpolation=Image.NEAREST, fill=self.fill)
         elif random.random() < 0.5:
             # 随机旋转-平移-缩放-错切 4种仿射变换 pytorch实现的是保持中心不变 不错切
             ret = transforms.RandomAffine.get_params(degrees=180, translate=(0.3, 0.3), scale=(0.3, 2),
                                                      shear=None, img_size=image.size)
             # angle, translations, scale, shear = ret
             # 0值填充，仍是原始图像大小，需要resize
-            image = tf.affine(image, *ret, fillcolor=self.fill)
-            label = tf.affine(label, *ret, fillcolor=self.fill)
+            image = tf.affine(image, *ret, resample=0, fillcolor=self.fill)  # PIL.Image.NEAREST
+            label = tf.affine(label, *ret, resample=0, fillcolor=self.fill)
 
         # 将图像处理成要求的大小
-        image = tf.resize(image, self.input_hw)
-        label = tf.resize(label, self.input_hw)
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
@@ -133,8 +134,8 @@ class Augmentations:
         image = transforms_func(image)
         # label = label
 
-        image = tf.resize(image, self.input_hw)
-        label = tf.resize(label, self.input_hw)
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
@@ -146,8 +147,8 @@ class Augmentations:
         image = np.array(image) + noise  # broadcast
         image = Image.fromarray(image, "RGB")
 
-        image = tf.resize(image, self.input_hw)
-        label = tf.resize(label, self.input_hw)
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
