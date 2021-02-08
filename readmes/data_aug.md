@@ -10,8 +10,8 @@
 - [ ] ~~copy-paste?~~
 - [ ] mosaic?
 
-#### data aug use PIL (3 channel)
-+ [dataset-PIL-Augumentations](../utils/dataset_PIL.py)
+#### data aug use PIL (3 channel RGB)
++ [dataset-PIL-Augumentations](../utils/aug_PIL.py)
 
 #### data aug use GDAL (>3 channel)
-+ TODO
++ [dataset-GDAL-cv2-Augumentations](../utils/aug_GDAL.py)

@@ -15,6 +15,7 @@
 ### Note
 + If a black border is introduced, it will be regarded as one type, and the default is 0 !
 + label value is [1, N], 0 is black border class !
++ Not supporting distributed(NCCL)
 
 ### How to Use
 
