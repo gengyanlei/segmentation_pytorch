@@ -1,15 +1,8 @@
-import cv2
-import torch
 import random
-import torchvision
 import numpy as np
 from PIL import Image
 from torchvision import transforms
-from torch.utils import data
 import torchvision.transforms.functional as tf
-
-# TODO random flip, rotate, crop, noise, hue-brightness-contrast-saturation, zoom(in out), copy-paste?, mosaic?
-# TODO GDAL imread any type image; -> .dataset_GDAL.py
 '''
     author is leilei
     语义分割数据增强时，需将图像和标签图同时操作，对于旋转，偏移等操作，会引入黑边(均为0值)，
@@ -18,11 +11,10 @@ import torchvision.transforms.functional as tf
     目前采用 torchvision.transforms.functional 的API，此api与PIL的数据增强操作是一致的，只要转成PIL，均采用uint8
     https://pytorch.org/docs/1.6.0/torchvision/transforms.html#functional-transforms
 '''
-class Augmentations:
+class Augmentations_PIL:
     def __init__(self, input_hw=(256, 256)):
         self.input_hw = input_hw
         self.fill = 0  # image label fill=0，0对应黑边
-
     '''
     以下操作，均为单操作，不可组合！，所有的操作输出均需要resize至input_hw
     且 image为3 channel，label为1 channel
@@ -76,7 +68,7 @@ class Augmentations:
         in_hw = image.size[::-1]
 
         factor = transforms.RandomRotation.get_params(scale)  # 等比例缩放，也可不等比例
-        size = (int(in_hw[0]*factor), int(in_hw[1]*factor))
+        size = (int(in_hw[0]*factor), int(in_hw[1]*factor))  # (h,w)
         image = tf.resize(image, size, interpolation=Image.BILINEAR)
         label = tf.resize(label, size,  interpolation=Image.NEAREST)
         # pad
@@ -91,6 +83,10 @@ class Augmentations:
         tf.pad(image, (left, top, right, bottom), fill=self.fill, padding_mode='constant')
         # 黑边 默认成 0 类
         tf.pad(label, (left, top, right, bottom), fill=self.fill, padding_mode='constant')
+
+        # resize
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
 
         return image, label
 
@@ -112,7 +108,7 @@ class Augmentations:
             label = tf.perspective(label, startpoints, endpoints, interpolation=Image.NEAREST, fill=self.fill)
         elif random.random() < 0.5:
             # 随机旋转-平移-缩放-错切 4种仿射变换 pytorch实现的是保持中心不变 不错切
-            ret = transforms.RandomAffine.get_params(degrees=180, translate=(0.3, 0.3), scale=(0.3, 2),
+            ret = transforms.RandomAffine.get_params(degrees=180, translate=(0.3, 0.3), scale=(0.3, 3),
                                                      shear=None, img_size=image.size)
             # angle, translations, scale, shear = ret
             # 0值填充，仍是原始图像大小，需要resize
@@ -142,7 +138,7 @@ class Augmentations:
     # gassian noise
     def random_noise(self, image, label, noise_sigma=10):
         in_hw = image.size[::-1]
-        noise = np.random.randn(in_hw) * noise_sigma
+        noise = np.uint8(np.random.randn(*in_hw) * noise_sigma)
 
         image = np.array(image) + noise  # broadcast
         image = Image.fromarray(image, "RGB")
@@ -152,14 +148,10 @@ class Augmentations:
 
         return image, label
 
-# 数据读取类
-class Dataset(data.Dataset):
-    def __init__(self, ):
-        pass
+if __name__ == '__main__':
+    aug_pil = Augmentations_PIL()
+    # dir包含 属性-所有方法，dict只包含属性
+    aug_funcs = [a for a in aug_pil.__dir__() if not a.startswith('_') and a not in aug_pil.__dict__]
 
-
-
-
-
-
-
+    print(random.choice(aug_funcs))
+    print(aug_funcs)
