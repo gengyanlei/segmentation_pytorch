@@ -88,7 +88,7 @@ class Augmentations_GDAL:
     # TODO
     def random_rotate(self, image, label, angle=None):
         '''
-        :param image:  GDALasArray uint8 or int16 or float32
+        :param image:  GDALasArray(ndarray) uint8 or int16 or float32
         :param label:  cv2.imread uint8
         :param angle:  None, list-float, tuple-float
         :return:  PIL
@@ -202,6 +202,10 @@ class Augmentations_GDAL:
         if (M != np.eye(3)).any():  # image changed
             image = cv2.warpAffine(image, M[:2], dsize=self.input_hw[::-1], borderMode=cv2.BORDER_CONSTANT, borderValue=self.fill)
             label = cv2.warpAffine(label, M[:2], dsize=self.input_hw[::-1], borderMode=cv2.BORDER_CONSTANT, borderValue=self.fill)
+        else:
+            # 若未变换，则直接resize，这种概率很小
+            image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)
+            label = cv2.resize(label, self.input_hw[::-1], interpolation=cv2.INTER_NEAREST)
 
         return image, label
 
@@ -229,18 +233,83 @@ class Augmentations_GDAL:
     #     pass
     #     return
 
+# TODO 下午写完 cv2 的train test的transoforms
 
+class Transforms_GDAL(object):
+    def __init__(self, input_hw=(256, 256)):
+        self.aug_gdal = Augmentations_GDAL(input_hw)
+        self.aug_funcs = [a for a in self.aug_gdal.__dir__() if not a.startswith('_') and a not in self.aug_gdal.__dict__]
+        print(self.aug_funcs)
 
+    def __call__(self, image, label):
+        '''
+        :param image:  PIL RGB uint8
+        :param label:  PIL, uint8
+        :return:  PIL
+        '''
+        aug_name = random.choice(self.aug_funcs)
+        print(aug_name)  # 类实例后，读取数据时会不停的调用这个，每次都应该随机选择吧！
+        image, label = getattr(self.aug_gdal, aug_name)(image, label)
+        return image, label
+
+class TestRescale(object):
+    # test
+    def __init__(self, input_hw=(256, 256)):
+        self.input_hw = input_hw
+    def __call__(self, image, label):
+        '''
+        :param image: ndarray
+        :param label: ndarray uint8
+        :return:
+        '''
+        image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)
+        label = cv2.resize(label, self.input_hw[::-1], interpolation=cv2.INTER_NEAREST)
+        return image, label
+
+class ToTensor(object):
+    # Converts numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W).
+    def __call__(self, image, label):
+        image = torch.from_numpy(image.transpose((2, 0, 1)))
+        if not isinstance(image, torch.FloatTensor):
+            image = image.float()
+        label = torch.from_numpy(label)
+        if not isinstance(label, torch.LongTensor):
+            label = label.long()
+        return image, label
+
+class Normalize(object):
+    # Normalize tensor with mean and standard deviation along channel: channel = (channel - mean) / std
+    def __init__(self, mean, std=None):
+        if std is None:
+            assert len(mean) > 0
+        else:
+            assert len(mean) == len(std)
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, image, label):
+        if self.std is None:
+            for t, m in zip(image, self.mean):
+                t.sub_(m)
+        else:
+            for t, m, s in zip(image, self.mean, self.std):
+                t.sub_(m).div_(s)
+        return image, label
 
 if __name__ == '__main__':
     runer = Gdal_Read()
     # jpg tiff 均可读取
     # im_proj, im_geotrans, im_data = runer.read_img(filename=r'F:\DataSets\jishi_toukui\1bc523b1-7bb4-4a14-9b32-5476f04c853f.jpg')
     im_proj, im_geotrans, im_data = runer.read_img(filename=r'D:\A145984.jpg')
-    print(111)
 
+    # image label 需要同时处理
+    train_transforms = transforms.Compose([Transforms_GDAL(input_hw=(150, 150)),
+                                           ToTensor(),  # /255 totensor
+                                           Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                           ])
+    test_transforms = transforms.Compose([TestRescale(input_hw=(150, 150)),
+                                          ToTensor(),  # /255
+                                          Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                          ])
 
-    a = np.ones([4,4], dtype=np.int16)
-    b = np.ones([4,4], dtype=np.int16)
-    a.astype()
-    np.dtype().name  # 就是str，numpy自动判断
+    in_tensor = train_transforms(im_data)

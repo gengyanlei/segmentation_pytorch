@@ -184,6 +184,7 @@ class TestRescale(object):
 class ToTensor(object):
     # image label -> tensor, image div 255
     def __call__(self, image, label):
+        # PIL uint8
         image = tf.to_tensor(image)  # transpose HWC->CHW, /255
         label = torch.from_numpy(np.array(label))  # PIL->ndarray->tensor
         if not isinstance(label, torch.LongTensor):
