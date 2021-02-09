@@ -16,6 +16,7 @@ class Augmentations_PIL:
         self.input_hw = input_hw
         self.fill = 0  # image label fill=0，0对应黑边
     '''
+    train 阶段
     以下操作，均为单操作，不可组合！，所有的操作输出均需要resize至input_hw
     且 image为3 channel，label为1 channel
     且 输入均为RGB-3通道
@@ -148,10 +149,55 @@ class Augmentations_PIL:
 
         return image, label
 
-if __name__ == '__main__':
-    aug_pil = Augmentations_PIL()
-    # dir包含 属性-所有方法，dict只包含属性
-    aug_funcs = [a for a in aug_pil.__dir__() if not a.startswith('_') and a not in aug_pil.__dict__]
+class Transforms_PIL(object):
+    def __init__(self, input_hw=(256, 256)):
+        self.aug_pil = Augmentations_PIL(input_hw)
+        self.aug_funcs = [a for a in self.aug_pil.__dir__() if not a.startswith('_') and a not in self.aug_pil.__dict__]
+        print(self.aug_funcs)
 
-    print(random.choice(aug_funcs))
-    print(aug_funcs)
+    def __call__(self, image, label):
+        '''
+        :param image:  PIL RGB uint8
+        :param label:  PIL, uint8
+        :return:  PIL
+        '''
+        aug_name = random.choice(self.aug_funcs)
+        print(aug_name)  # 类实例后，读取数据时会不停的调用这个，每次都应该随机选择吧！
+        image, label = getattr(self.aug_pil, aug_name)(image, label)
+        return image, label
+
+class TestRescale(object):
+    # test
+    def __init__(self, input_hw=(256, 256)):
+        self.input_hw = input_hw
+    def __call__(self, image, label):
+        '''
+        :param image:  PIL RGB uint8
+        :param label:  PIL, uint8
+        :return:  PIL
+        '''
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
+        return image, label
+
+if __name__ == '__main__':
+    # aug_pil = Augmentations_PIL()
+    # # dir包含 属性-所有方法，dict只包含属性
+    # aug_funcs = [a for a in aug_pil.__dir__() if not a.startswith('_') and a not in aug_pil.__dict__]
+
+    trans = Transforms_PIL(input_hw=(150,150))
+    image = np.uint8(np.random.rand(100,100,3)*255)
+    label = np.ones([100,100], dtype=np.uint8)
+    image = Image.fromarray(image, "RGB")
+    label = Image.fromarray(label)
+    image1, label1 = trans(image, label)
+    print(111)
+
+    train_transforms = transforms.Compose([Transforms_PIL(input_hw=(150,150)),
+                                           transforms.ToTensor(),  # /255
+                                           transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                           ])
+    test_transforms = transforms.Compose([TestRescale(input_hw=(150,150)),
+                                          transforms.ToTensor(),  # /255
+                                          transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                          ])
