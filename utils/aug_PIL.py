@@ -21,6 +21,7 @@ class Augmentations_PIL:
     以下操作，均为单操作，不可组合！，所有的操作输出均需要resize至input_hw
     且 image为3 channel，label为1 channel
     且 输入均为RGB-3通道
+    image:[HWC], label:[HW]
     '''
     def random_rotate(self, image, label, angle=None):
         '''

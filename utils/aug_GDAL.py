@@ -84,6 +84,7 @@ class Augmentations_GDAL:
     以下操作，均为单操作，不可组合！，所有的操作输出均需要resize至input_hw
     且 image为多通道，label为1通道
     采用GDAL读取，但是数据增强采用cv2执行，cv2支持int16,float32，不支持int32格式
+    image:[HWC], label:[HW]
     '''
     # TODO
     def random_rotate(self, image, label, angle=None):
