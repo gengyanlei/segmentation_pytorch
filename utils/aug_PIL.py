@@ -1,4 +1,5 @@
 import random
+import torch
 import numpy as np
 from PIL import Image
 from torchvision import transforms
@@ -180,24 +181,48 @@ class TestRescale(object):
         label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
         return image, label
 
+class ToTensor(object):
+    # image label -> tensor, image div 255
+    def __call__(self, image, label):
+        image = tf.to_tensor(image)  # transpose HWC->CHW, /255
+        label = torch.from_numpy(np.array(label))  # PIL->ndarray->tensor
+        if not isinstance(label, torch.LongTensor):
+            label = label.long()
+        return image, label
+
+class Normalize(object):
+    # (image-mean)/std
+    def __init__(self, mean, std, inplace=False):
+        self.mean = mean  # RGB
+        self.std = std
+        self.inplace = inplace
+
+    def __call__(self, image, label):
+        image = tf.normalize(image, self.mean, self.std, self.inplace)
+        assert isinstance(label, torch.LongTensor)
+        label = label
+        return image, label
+
+
 if __name__ == '__main__':
     # aug_pil = Augmentations_PIL()
     # # dir包含 属性-所有方法，dict只包含属性
+    # print(aug_pil.__dict__)
     # aug_funcs = [a for a in aug_pil.__dir__() if not a.startswith('_') and a not in aug_pil.__dict__]
+    #
+    # trans = Transforms_PIL(input_hw=(150,150))
+    # image = np.uint8(np.random.rand(100,100,3)*255)
+    # label = np.ones([100,100], dtype=np.uint8)
+    # image = Image.fromarray(image, "RGB")
+    # label = Image.fromarray(label)
+    # image1, label1 = trans(image, label)
 
-    trans = Transforms_PIL(input_hw=(150,150))
-    image = np.uint8(np.random.rand(100,100,3)*255)
-    label = np.ones([100,100], dtype=np.uint8)
-    image = Image.fromarray(image, "RGB")
-    label = Image.fromarray(label)
-    image1, label1 = trans(image, label)
-    print(111)
-
+    # image label 需要同时处理
     train_transforms = transforms.Compose([Transforms_PIL(input_hw=(150,150)),
-                                           transforms.ToTensor(),  # /255
-                                           transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                           ToTensor(),  # /255 totensor
+                                           Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
                                            ])
     test_transforms = transforms.Compose([TestRescale(input_hw=(150,150)),
-                                          transforms.ToTensor(),  # /255
-                                          transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                          ToTensor(),  # /255
+                                          Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
                                           ])
