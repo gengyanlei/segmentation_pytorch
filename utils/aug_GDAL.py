@@ -268,7 +268,7 @@ class TestRescale(object):
         return image, label
 
 class ToTensor(object):
-    # Converts numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W).
+    # Converts numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W). but no norm to 0-1
     def __call__(self, image, label):
         image = torch.from_numpy(image.transpose((2, 0, 1)))
         if not isinstance(image, torch.FloatTensor):
@@ -280,15 +280,22 @@ class ToTensor(object):
 
 class Normalize(object):
     # Normalize tensor with mean and standard deviation along channel: channel = (channel - mean) / std
-    def __init__(self, mean, std=None):
+    def __init__(self, mean, std=None, value_scale=255):
+        # mean's type list or tuple
         if std is None:
             assert len(mean) > 0
         else:
             assert len(mean) == len(std)
-        self.mean = mean
-        self.std = std
+
+        # equal to norm [0,1] then similar to pytorch's norm
+        self.mean = [item * value_scale for item in mean]
+        try:
+            self.std = [item * value_scale for item in std]
+        except:
+            self.std = std
 
     def __call__(self, image, label):
+        # tensor
         if self.std is None:
             for t, m in zip(image, self.mean):
                 t.sub_(m)
