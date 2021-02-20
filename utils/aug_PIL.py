@@ -1,3 +1,4 @@
+import cv2
 import random
 import torch
 import numpy as np
@@ -141,9 +142,19 @@ class Augmentations_PIL:
     # gassian noise
     def random_noise(self, image, label, noise_sigma=10):
         in_hw = image.size[::-1]
-        noise = np.uint8(np.random.randn(*in_hw) * noise_sigma)
+        noise = np.uint8(np.random.randn(*in_hw) * noise_sigma)  # +-
 
         image = np.array(image) + noise  # broadcast
+        image = Image.fromarray(image, "RGB")
+
+        image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
+        label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
+
+        return image, label
+
+    def random_blur(self, image, label, kernel_size=(5,5)):
+        assert len(kernel_size) == 2, "kernel size must be tuple and len()=2"
+        image = cv2.GaussianBlur(np.array(image), ksize=kernel_size, sigmaX=0)
         image = Image.fromarray(image, "RGB")
 
         image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)

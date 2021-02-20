@@ -216,13 +216,22 @@ class Augmentations_GDAL:
 
         return image, label
 
-    # gassian noise
+    # gassian noise TODO gassian-blur
     def random_noise(self, image, label, noise_sigma=10):
         in_hw = label.shape[:2]
-        noise = (np.random.randn(in_hw) * noise_sigma).astype(image.dtype)
+        noise = (np.random.randn(in_hw) * noise_sigma).astype(image.dtype)  # +-
         image += noise  # broadcast
 
         # resize
+        image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)
+        label = cv2.resize(label, self.input_hw[::-1], interpolation=cv2.INTER_NEAREST)
+
+        return image, label
+
+    def random_blur(self, image, label, kernel_size=(5,5)):
+        assert len(kernel_size) == 2, "kernel size must be tuple and len()=2"
+        image = cv2.GaussianBlur(image, ksize=kernel_size, sigmaX=0)
+
         image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)
         label = cv2.resize(label, self.input_hw[::-1], interpolation=cv2.INTER_NEAREST)
 
@@ -234,7 +243,6 @@ class Augmentations_GDAL:
     #     pass
     #     return
 
-# TODO 下午写完 cv2 的train test的transoforms
 
 class Transforms_GDAL(object):
     def __init__(self, input_hw=(256, 256)):
