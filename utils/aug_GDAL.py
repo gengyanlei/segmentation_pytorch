@@ -312,20 +312,32 @@ class Normalize(object):
                 t.sub_(m).div_(s)
         return image, label
 
+# Compose pytorch自带的只对img处理，需要重写
+class Compose(object):
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, image, label):
+        for t in self.transforms:
+            image, label = t(image, label)
+        return image, label
+
 if __name__ == '__main__':
-    runer = Gdal_Read()
-    # jpg tiff 均可读取
-    # im_proj, im_geotrans, im_data = runer.read_img(filename=r'F:\DataSets\jishi_toukui\1bc523b1-7bb4-4a14-9b32-5476f04c853f.jpg')
-    im_proj, im_geotrans, im_data = runer.read_img(filename=r'D:\A145984.jpg')
+    # runer = Gdal_Read()
+    # # jpg tiff 均可读取
+    # # im_proj, im_geotrans, im_data = runer.read_img(filename=r'F:\DataSets\jishi_toukui\1bc523b1-7bb4-4a14-9b32-5476f04c853f.jpg')
+    # im_proj, im_geotrans, im_data = runer.read_img(filename=r'D:\A145984.jpg')
 
     # image label 需要同时处理
-    train_transforms = transforms.Compose([Transforms_GDAL(input_hw=(150, 150)),
-                                           ToTensor(),  # /255 totensor
-                                           Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                                           ])
-    test_transforms = transforms.Compose([TestRescale(input_hw=(150, 150)),
-                                          ToTensor(),  # /255
-                                          Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                                          ])
-
-    in_tensor = train_transforms(im_data)
+    train_transforms = Compose([Transforms_GDAL(input_hw=(150, 150)),
+                                ToTensor(),  # /255 totensor
+                                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                ])
+    test_transforms = Compose([TestRescale(input_hw=(150, 150)),
+                               ToTensor(),  # /255
+                               Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                               ])
+    image = np.ones([100,100,3], dtype=np.uint8)
+    label = np.ones([100,100], dtype=np.uint8)
+    im_out, lab_out = train_transforms(image, label)
+    print(im_out.shape)

@@ -102,7 +102,6 @@ class Augmentations_PIL:
     '''
     def random_affine(self, image, label):
         # 随机仿射(随机偏移，随机旋转，随机放缩等整合)
-        # TODO
         if random.random() > 0.5:
             # 透视变换 RandomPerspective
             width, height = image.size
@@ -111,9 +110,10 @@ class Augmentations_PIL:
             image = tf.perspective(image, startpoints, endpoints, interpolation=Image.BICUBIC, fill=self.fill)
             label = tf.perspective(label, startpoints, endpoints, interpolation=Image.NEAREST, fill=self.fill)
         elif random.random() < 0.5:
+            # TODO 将degrees等参数传出，由用户设置
             # 随机旋转-平移-缩放-错切 4种仿射变换 pytorch实现的是保持中心不变 不错切
-            ret = transforms.RandomAffine.get_params(degrees=180, translate=(0.3, 0.3), scale=(0.3, 3),
-                                                     shear=None, img_size=image.size)
+            ret = transforms.RandomAffine.get_params(degrees=(-180, 180), translate=(0.3, 0.3), scale_ranges=(0.3, 3),
+                                                     shears=None, img_size=image.size)
             # angle, translations, scale, shear = ret
             # 0值填充，仍是原始图像大小，需要resize
             image = tf.affine(image, *ret, resample=0, fillcolor=self.fill)  # PIL.Image.NEAREST
@@ -216,6 +216,15 @@ class Normalize(object):
         label = label
         return image, label
 
+# Compose pytorch自带的只对img处理，需要重写
+class Compose(object):
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, image, label):
+        for t in self.transforms:
+            image, label = t(image, label)
+        return image, label
 
 if __name__ == '__main__':
     # aug_pil = Augmentations_PIL()
@@ -224,18 +233,21 @@ if __name__ == '__main__':
     # aug_funcs = [a for a in aug_pil.__dir__() if not a.startswith('_') and a not in aug_pil.__dict__]
     #
     # trans = Transforms_PIL(input_hw=(150,150))
-    # image = np.uint8(np.random.rand(100,100,3)*255)
-    # label = np.ones([100,100], dtype=np.uint8)
-    # image = Image.fromarray(image, "RGB")
-    # label = Image.fromarray(label)
+    image = np.uint8(np.random.rand(100,100,3)*255)
+    label = np.ones([100,100], dtype=np.uint8)
+    image = Image.fromarray(image, "RGB")  # PIL
+    label = Image.fromarray(label)  # PIL
     # image1, label1 = trans(image, label)
 
     # image label 需要同时处理
-    train_transforms = transforms.Compose([Transforms_PIL(input_hw=(150,150)),
-                                           ToTensor(),  # /255 totensor
-                                           Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                                           ])
-    test_transforms = transforms.Compose([TestRescale(input_hw=(150,150)),
-                                          ToTensor(),  # /255
-                                          Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                                          ])
+    train_transforms = Compose([Transforms_PIL(input_hw=(150,150)),
+                                ToTensor(),  # /255 totensor
+                                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                ])
+    test_transforms = Compose([TestRescale(input_hw=(150,150)),
+                               ToTensor(),  # /255
+                               Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                               ])
+
+    im_out, lab_out = train_transforms(image, label)
+    print(im_out.shape)
