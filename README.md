@@ -47,19 +47,19 @@ data enhancement:
 ```
 
 ### Support Network
-- [x] deeplab_v3_plus(models/deeplab_v3_plus.py)
+- [x] [deeplab_v3_plus](models/deeplab_v3_plus.py)
 - [x] [pspnet](models/pspnet.py)
 - [x] [unet](models/unet.py)
 - [x] [spp-net](models/spp.py)
 - [x] [HF_FCN](models/hed_series/hf_fcn_vgg16.py)
 + TODO
-- [ ] torchvision.models.deeplab_v3
+- [ ] [deeplab_v3]torchvision.models.deeplab_v3
 - [ ] [HRNet](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/pytorch-v1.1)
 - [ ] [U^2Net](https://github.com/NathanUA/U-2-Net)
 - [ ] ...
 
 ### Data Aug
-+ [data-augumentations](./readmes/data_aug.md)
++ [**data-augumentations**](./readmes/data_aug.md)
 
 
 ### others
