@@ -80,7 +80,8 @@ class Gdal_Read:
 class Augmentations_GDAL:
     def __init__(self, input_hw=(256, 256)):
         self.input_hw = input_hw
-        self.fill = 0  # image label fill=0，0对应黑边
+        self.image_fill = 0  # image fill=0，0对应黑边
+        self.label_fill = 0  # label fill=0，0对应黑边
     '''
     以下操作，均为单操作，不可组合！，所有的操作输出均需要resize至input_hw
     且 image为多通道，label为1通道
@@ -103,9 +104,9 @@ class Augmentations_GDAL:
         h, w = label.shape[:2]
         matrix = cv2.getRotationMatrix2D((w / 2, h / 2), angle, 1)  # 尺度不变，中心旋转
         image = cv2.warpAffine(image, matrix, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
-                               borderValue=self.fill)
+                               borderValue=self.image_fill)
         label = cv2.warpAffine(label, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT,
-                               borderValue=self.fill)
+                               borderValue=self.label_fill)
 
         # resize
         image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)
@@ -157,8 +158,8 @@ class Augmentations_GDAL:
         left = left_right >> 1 if left_right > 0 else 0
         right = left_right - left if left_right > 0 else 0
 
-        image = cv2.copyMakeBorder(image, top=top, bottom=bottom, left=left, right=right, borderType=cv2.BORDER_CONSTANT, value=self.fill)
-        label = cv2.copyMakeBorder(label, top=top, bottom=bottom, left=left, right=right, borderType=cv2.BORDER_CONSTANT, value=self.fill)
+        image = cv2.copyMakeBorder(image, top=top, bottom=bottom, left=left, right=right, borderType=cv2.BORDER_CONSTANT, value=self.image_fill)
+        label = cv2.copyMakeBorder(label, top=top, bottom=bottom, left=left, right=right, borderType=cv2.BORDER_CONSTANT, value=self.label_fill)
 
         # resize
         image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)
@@ -202,8 +203,8 @@ class Augmentations_GDAL:
         # Combined rotation matrix
         M = T @ S @ R @ P @ C  # order of operations (right to left) is IMPORTANT
         if (M != np.eye(3)).any():  # image changed
-            image = cv2.warpAffine(image, M[:2], dsize=self.input_hw[::-1], borderMode=cv2.BORDER_CONSTANT, borderValue=self.fill)
-            label = cv2.warpAffine(label, M[:2], dsize=self.input_hw[::-1], borderMode=cv2.BORDER_CONSTANT, borderValue=self.fill)
+            image = cv2.warpAffine(image, M[:2], dsize=self.input_hw[::-1], borderMode=cv2.BORDER_CONSTANT, borderValue=self.image_fill)
+            label = cv2.warpAffine(label, M[:2], dsize=self.input_hw[::-1], borderMode=cv2.BORDER_CONSTANT, borderValue=self.label_fill)
         else:
             # 若未变换，则直接resize，这种概率很小
             image = cv2.resize(image, self.input_hw[::-1], interpolation=cv2.INTER_LINEAR)

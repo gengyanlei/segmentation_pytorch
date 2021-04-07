@@ -16,7 +16,8 @@ import torchvision.transforms.functional as tf
 class Augmentations_PIL:
     def __init__(self, input_hw=(256, 256)):
         self.input_hw = input_hw
-        self.fill = 0  # image label fill=0，0对应黑边
+        self.image_fill = 0  # image fill=0，0对应黑边
+        self.label_fill = 0  # label fill=0，0对应黑边
     '''
     train 阶段
     以下操作，均为单操作，不可组合！，所有的操作输出均需要resize至input_hw
@@ -36,8 +37,8 @@ class Augmentations_PIL:
         elif isinstance(angle, list) or isinstance(angle, tuple):
             angle = random.choice(angle)
 
-        image = tf.rotate(image, angle)
-        label = tf.rotate(label, angle)
+        image = tf.rotate(image, angle, fill=self.image_fill)
+        label = tf.rotate(label, angle, fill=self.label_fill)
 
         image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
         label = tf.resize(label, self.input_hw, interpolation=Image.NEAREST)
@@ -84,9 +85,9 @@ class Augmentations_PIL:
         left = left_right >> 1 if left_right > 0 else 0
         right = left_right - left if left_right > 0 else 0
 
-        tf.pad(image, (left, top, right, bottom), fill=self.fill, padding_mode='constant')
+        tf.pad(image, (left, top, right, bottom), fill=self.image_fill, padding_mode='constant')
         # 黑边 默认成 0 类
-        tf.pad(label, (left, top, right, bottom), fill=self.fill, padding_mode='constant')
+        tf.pad(label, (left, top, right, bottom), fill=self.label_fill, padding_mode='constant')
 
         # resize
         image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
@@ -107,8 +108,8 @@ class Augmentations_PIL:
             width, height = image.size
             startpoints, endpoints = transforms.RandomPerspective.get_params(width, height, 0.5)
             # 0值填充，仍是原始图像大小，需要resize
-            image = tf.perspective(image, startpoints, endpoints, interpolation=Image.BICUBIC, fill=self.fill)
-            label = tf.perspective(label, startpoints, endpoints, interpolation=Image.NEAREST, fill=self.fill)
+            image = tf.perspective(image, startpoints, endpoints, interpolation=Image.BICUBIC, fill=self.image_fill)
+            label = tf.perspective(label, startpoints, endpoints, interpolation=Image.NEAREST, fill=self.label_fill)
         elif random.random() < 0.5:
             # TODO 将degrees等参数传出，由用户设置
             # 随机旋转-平移-缩放-错切 4种仿射变换 pytorch实现的是保持中心不变 不错切
@@ -116,8 +117,8 @@ class Augmentations_PIL:
                                                      shears=None, img_size=image.size)
             # angle, translations, scale, shear = ret
             # 0值填充，仍是原始图像大小，需要resize
-            image = tf.affine(image, *ret, resample=0, fillcolor=self.fill)  # PIL.Image.NEAREST
-            label = tf.affine(label, *ret, resample=0, fillcolor=self.fill)
+            image = tf.affine(image, *ret, resample=0, fillcolor=self.image_fill)  # PIL.Image.NEAREST
+            label = tf.affine(label, *ret, resample=0, fillcolor=self.label_fill)
 
         # 将图像处理成要求的大小
         image = tf.resize(image, self.input_hw, interpolation=Image.BILINEAR)
