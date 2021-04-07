@@ -4,6 +4,10 @@
     Restart this project from 2017-10-01 
     TODO
     The latest version of the code cannot be executed and is still being updated.
+    ----------------------------------------------------------
+    I am learning the code of yolov5 and borrow it from my code.
+    Then update the main function and tensorboard later.
+    ----------------------------------------------------------
 ```
 
 ### Environment
