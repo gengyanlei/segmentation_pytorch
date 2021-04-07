@@ -64,6 +64,12 @@ data enhancement:
 
 ### Data Aug
 + [**data-augumentations**](./readmes/data_aug.md)
+```
+support 
+    random zoom-in/out, random noise,
+    random blur, random color-jitter(brightness-contrast-saturation-hue)
+    random affine, random rotate, random flip
+```
 
 
 ### others
