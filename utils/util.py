@@ -1,6 +1,10 @@
+import os
+from pathlib import Path
 import random
 import math
-
+import numpy as np
+import torch
+from torch.backends import cudnn
 '''
     一些辅助函数
 '''
@@ -48,3 +52,29 @@ def RandomResizedCrop_get_params(img, scale, ratio):
     i = (height - h) // 2
     j = (width - w) // 2
     return i, j, h, w
+
+
+def init_seeds(seed=1):
+    random.seed(seed)
+    np.random.seed(seed)
+    init_torch_seeds(seed)
+    return
+
+# 为什么不使用 所有GPU的呢？
+def init_torch_seeds(seed=0):
+    # Speed-reproducibility tradeoff https://pytorch.org/docs/stable/notes/randomness.html
+    torch.manual_seed(seed)
+    if seed == 0:  # slower, more reproducible
+        cudnn.deterministic = True
+        cudnn.benchmark = False
+    else:  # faster, less reproducible
+        cudnn.deterministic = False
+        cudnn.benchmark = True
+    return
+
+def check_path(path):
+    p = Path(path)
+    if not p.exists():
+        p.mkdir()
+    return
+
