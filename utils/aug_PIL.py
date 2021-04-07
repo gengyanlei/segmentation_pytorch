@@ -174,8 +174,8 @@ class Transforms_PIL(object):
         :param label:  PIL, uint8
         :return:  PIL
         '''
-        # aug_name = random.choice(self.aug_funcs)
-        aug_name = 'random_resize_crop' #'random_rotate' #'random_flip' #'random_blur' #'random_noise' #'random_affine' #'random_resize_minify' #'random_resize_crop'
+        aug_name = random.choice(self.aug_funcs)
+        # aug_name = 'random_resize_crop' #'random_rotate' #'random_flip' #'random_blur' #'random_noise' #'random_affine' #'random_resize_minify' #'random_resize_crop'
         print(aug_name)  # 类实例后，读取数据时会不停的调用这个，每次都应该随机选择吧！
         image, label = getattr(self.aug_pil, aug_name)(image, label)
         return image, label
