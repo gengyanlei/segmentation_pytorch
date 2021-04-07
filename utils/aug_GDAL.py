@@ -7,6 +7,7 @@ import numpy as np
 # from osgeo import gdal
 from torchvision.transforms import transforms
 import torchvision.transforms.functional as tf
+from utils.util import RandomResizedCrop_get_params
 
 '''
     author is leilei
@@ -128,7 +129,7 @@ class Augmentations_GDAL:
 
     # zoom in
     def random_resize_crop(self, image, label, scale=(0.3, 1.0), ratio=(1, 1)):
-        i, j, h, w = transforms.RandomResizedCrop.get_params(image, scale=scale, ratio=ratio)
+        i, j, h, w = RandomResizedCrop_get_params(image, scale=scale, ratio=ratio)  # 由于torch的需要pil格式，因此自定义utils
         image = image[i:i+h, j:j+w]
         label = label[i:i+h, j:j+w]
 
@@ -218,8 +219,8 @@ class Augmentations_GDAL:
 
     # gassian noise TODO gassian-blur
     def random_noise(self, image, label, noise_sigma=10):
-        in_hw = label.shape[:2]
-        noise = (np.random.randn(in_hw) * noise_sigma).astype(image.dtype)  # +-
+        in_hw = label.shape[:2] + (1,)  # 需要 与image 同样的维度数量，才可以broadcast
+        noise = (np.random.randn(*in_hw) * noise_sigma).astype(image.dtype)  # +-
         image += noise  # broadcast
 
         # resize
@@ -257,6 +258,7 @@ class Transforms_GDAL(object):
         :return:  PIL
         '''
         aug_name = random.choice(self.aug_funcs)
+        # aug_name = 'random_rotate' #'random_flip' #'random_blur' #'random_noise' #'random_affine' #'random_resize_minify' #'random_resize_crop'
         print(aug_name)  # 类实例后，读取数据时会不停的调用这个，每次都应该随机选择吧！
         image, label = getattr(self.aug_gdal, aug_name)(image, label)
         return image, label
@@ -330,11 +332,11 @@ if __name__ == '__main__':
 
     # image label 需要同时处理
     train_transforms = Compose([Transforms_GDAL(input_hw=(150, 150)),
-                                ToTensor(),  # /255 totensor
-                                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                                ToTensor(),  # just hwc->chw
+                                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),  # note value_scale
                                 ])
     test_transforms = Compose([TestRescale(input_hw=(150, 150)),
-                               ToTensor(),  # /255
+                               ToTensor(),
                                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
                                ])
     image = np.ones([100,100,3], dtype=np.uint8)
