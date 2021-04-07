@@ -1,0 +1,2 @@
+/home/gengyanlei/data/images/aaa.jpg
+/home/gengyanlei/data/images/bbb.jpg
