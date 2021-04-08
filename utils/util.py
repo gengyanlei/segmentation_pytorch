@@ -83,3 +83,16 @@ def check_path(path, is_file=False):
         p.mkdir(parents=True)
     return
 
+def increment_path(path, sep=''):
+    # Increment path, i.e. runs/exp --> runs/exp{sep}0, runs/exp{sep}1 etc.
+    path = Path(path)  # os-agnostic
+    if (not path.exists()):
+        return str(path)
+    else:
+        import glob, re
+        dirs = glob.glob(f"{path}{sep}*")  # similar paths
+        matches = [re.search(rf"%s{sep}(\d+)" % path.stem, d) for d in dirs]  # linux file and folder same name is not existed
+        i = [int(m.groups()[0]) for m in matches if m]  # indices
+        n = max(i) + 1 if i else 1  # increment number
+        return f"{path}{sep}{n}"  # update path
+
