@@ -74,8 +74,11 @@ def init_torch_seeds(seed=0):
         cudnn.benchmark = True
     return
 
-def check_path(path):
+def check_path(path, is_file=False):
     p = Path(path)
+    if is_file:
+        p.touch()
+        return
     if not p.exists():
         p.mkdir(parents=True)
     return
