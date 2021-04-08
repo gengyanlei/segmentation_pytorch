@@ -1,0 +1,13 @@
+input_hw: (256, 256)  # 网络输入尺寸
+mean: [0.485, 0.456, 0.406]
+std: [0.229, 0.224, 0.225]
+is_gdal: False
+value_scale: None  # 当is_gdal为True时，value_scale是int类型
+
+device: '1, 0'
+batch_size: 16
+num_workers: 8
+lr: 1e-3
+train_txt_path: './data/train.txt'
+test_txt_path: './data/test.txt'
+
