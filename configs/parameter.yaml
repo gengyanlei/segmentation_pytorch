@@ -1,13 +1,16 @@
-input_hw: (256, 256)  # 网络输入尺寸
+input_hw: (256, 256)  # model input height-width
 mean: [0.485, 0.456, 0.406]
 std: [0.229, 0.224, 0.225]
 is_gdal: False
-value_scale: None  # 当is_gdal为True时，value_scale是int类型
+value_scale: None  # is_gdal=True，value_scale is int
 
-device: '1, 0'
+device: '1, 0'  # gpu id
 batch_size: 16
 num_workers: 8
-lr: 1e-3
+lr0: 1e-3
+momentum: 0.9  # adam betas[0], SGD momentum
 train_txt_path: './data/train.txt'
 test_txt_path: './data/test.txt'
 
+class_number: 5
+test_interval: 1  # test per test_interval epoches
