@@ -5,8 +5,10 @@ import math
 import numpy as np
 import torch
 from torch.backends import cudnn
+from torch.optim import lr_scheduler
+
 '''
-    一些辅助函数
+    Some auxiliary functions/一些辅助函数
 '''
 
 
@@ -75,6 +77,6 @@ def init_torch_seeds(seed=0):
 def check_path(path):
     p = Path(path)
     if not p.exists():
-        p.mkdir()
+        p.mkdir(parents=True)
     return
 
