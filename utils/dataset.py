@@ -102,7 +102,11 @@ def load_data(params):
     test_dataset = LoadDataset(test_txt_path, test_transforms, is_gdal)
     test_loader = data.DataLoader(test_dataset, batch_size*2, shuffle=False, num_workers=num_workers)
 
-    return train_loader, test_loader
+    data_loader = {}
+    data_loader['train'] = train_loader
+    data_loader['test'] = test_loader
+
+    return data_loader
 
 
 
