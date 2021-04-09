@@ -7,10 +7,16 @@ value_scale: None  # is_gdal=True，value_scale is int
 device: '1, 0'  # gpu id
 batch_size: 16
 num_workers: 8
-lr0: 1e-3
+lr0: 1e-3  # init lr
+lrf: 0.1  # final OneCycleLR learning rate (lr0 * lrf)
 momentum: 0.9  # adam betas[0], SGD momentum
 train_txt_path: './data/train.txt'
 test_txt_path: './data/test.txt'
 
 class_number: 5
 test_interval: 1  # test per test_interval epoches
+epoches: 100
+
+
+
+
