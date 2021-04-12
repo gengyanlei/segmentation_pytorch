@@ -21,7 +21,7 @@ def main(args):
         param_dict = yaml.load(f, Loader=yaml.FullLoader)
 
     # creat save folder path
-    save_dir = increment_path(args.project)
+    save_dir = increment_path(args.project)  # str
     check_path(save_dir)
     param_dict['save_dir'] = save_dir  # update to param_dict
     # tensorboard
@@ -60,9 +60,7 @@ def main(args):
     # TODO train  test  metrics
     train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, continue_epoch)
 
-
     return
-
 
 
 if __name__ == '__main__':
