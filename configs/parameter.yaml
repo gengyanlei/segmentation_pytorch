@@ -13,7 +13,8 @@ momentum: 0.9  # adam betas[0], SGD momentum
 train_txt_path: './data/train.txt'
 test_txt_path: './data/test.txt'
 
-class_number: 5
+class_number: 5+1  # _background_ must be 0
+class_names: ['_background_', '1', '2', '3', '4', '5']
 test_interval: 1  # test per test_interval epoches
 epoches: 100
 
