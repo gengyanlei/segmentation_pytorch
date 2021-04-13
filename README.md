@@ -4,10 +4,6 @@
     Restart this project from 2017-10-01 
     TODO
     The latest version of the code cannot be executed and is still being updated.
-    ----------------------------------------------------------
-    I am learning the code of yolov5 and borrow it from my code.
-    Then update the main function and tensorboard later.
-    ----------------------------------------------------------
 ```
 
 ### Environment
@@ -16,39 +12,19 @@
     ubuntu16.04 or 18.04
     pytorch 1.6+ (cuda10.2 docker)
     tensorboard 2.0+
+    scikit-learn 0.24.1
 ```
 
-### Note
+### **Note**
 + If a black border is introduced, it will be regarded as one type, and the default is 0 !
 + label value is [1, N], 0 is black border class !
-+ Not supporting distributed(NCCL)
++ Not supporting distributed(NCCL), just support DataParallel.
 
-### How to Use
+### Getting Started
++ [How to Use](./readmes/train_cusom.md)
 
-+ Train
-
-+ Test
-
-+ Dataset Details
-```
-root：
-    images:  
-    labels: 
-    train.txt：
-        /home/dataset/seg/images/train/aaa.jpg
-        /home/dataset/seg/images/train/bbb.jpg
-    test.txt：
-        /home/dataset/seg/images/test/ccc.jpg
-    
-how to match images and labels?
-    '/home/dataset/seg/images/train/aaa.jpg'.replace('images', 'labels')
-    or
-    '/home/dataset/seg/labels/train/aaa.jpg'.replace('.jpg', '.png')
-
-data enhancement:
-    random flip, rotate, crop, noise, 
-    hue-brightness-contrast-saturation, zoom(in out), copy-paste?, mosaic?
-```
+### Demo
++ TODO
 
 ### Support Network
 - [x] [deeplab_v3_plus](models/deeplab_v3_plus.py)
@@ -56,7 +32,6 @@ data enhancement:
 - [x] [unet](models/unet.py)
 - [x] [spp-net](models/spp.py)
 - [x] [HF_FCN](models/hed_series/hf_fcn_vgg16.py)
-+ TODO
 - [ ] [deeplab_v3](https://github.com/pytorch/vision/blob/master/torchvision/models/segmentation/deeplabv3.py)
 - [ ] [HRNet](https://github.com/HRNet/HRNet-Semantic-Segmentation/tree/pytorch-v1.1)
 - [ ] [U^2Net](https://github.com/NathanUA/U-2-Net)
@@ -71,7 +46,6 @@ support
     random affine, random rotate, random flip
 ```
 
-
-### others
+### Others
 * [building-segmentation-dataset](https://github.com/gengyanlei/build_segmentation_dataset) 
 * [reflective-clothes-detect-dataset](https://github.com/gengyanlei/reflective-clothes-detect)
