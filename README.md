@@ -2,8 +2,10 @@
 ```
     author is leilei
     Restart this project from 2017-10-01 
-    TODO
+    
     The training code can be executed, but the demo code is not completed.
+    TODO
+    等待demo.py完成后，即可为 v1 版本，v2版本会增加dist，以及优化代码！
 ```
 
 ### Environment
