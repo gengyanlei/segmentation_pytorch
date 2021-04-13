@@ -1,11 +1,20 @@
-### Train Custom Data
+### Getting Started
 
+#### Train
++ You need to prepare the data in the format of 'Dataset Details'.
++ Modify the configuration file parameters [parameter.yaml](../configs/parameter.yaml).
++ Modify [main.py](../main.py) args's params and model-network-code.
 
-+ Train
+<details>
+  <summary>Figure Notes (click to expand)</summary>
+  + ![modify1](./main_modify.jpg)
+  + ![modify2](./param_modify.jpg)
+</details>
 
-+ Test
+#### Test
++ TODO 
 
-+ Dataset Details
+#### Dataset Details
 ```
 root：
     images:  
