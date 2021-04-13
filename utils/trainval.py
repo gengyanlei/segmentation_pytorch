@@ -2,9 +2,19 @@
     train-test stage
 '''
 import torch
+import numpy as np
 from torch import nn
+from pathlib import Path
+from utils.metrics import get_confusion_matrix, compute_acc_pr_iou
+import torch.nn.functional as F
 
 def train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, continue_epoch):
+    # weights folder create
+    save_dir = Path(param_dict['save_dir']) / 'weights'
+    save_dir.mkdir(parents=True, exist_ok=True)
+    last = save_dir / 'last.pt'
+    best = save_dir / 'best.pt'
+
     cross_entropy = nn.CrossEntropyLoss()
 
     # first update lr
@@ -38,16 +48,25 @@ def train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, conti
         tb_writer.add_scalar('Loss/train_loss', train_loss/len(data_loader['train']), epoch)
 
         # val stage
-        if ((epoch - continue_epoch) % param_dict['test_interval'] == 0) and \
-                (epoch - continue_epoch) != 0:
+        if ((epoch - continue_epoch) % param_dict['test_interval'] == 0) and (epoch - continue_epoch) != 0:
 
-            test_loss, test_acc = test(data_loader['test'], model, param_dict)
+            test_loss, test_indexs = test(data_loader['test'], model, param_dict)
             tb_writer.add_scalar('Loss/test_loss', test_loss, epoch)
-            # TODO add metrics
+            tags = ['Metrics/Accuracy', 'Metrics/Mean_Precision', 'Metrics/Mean_Recall', 'Metrics/Mean_IoU']
+            for tag, index in zip(tags, test_indexs):
+                tb_writer.add_scalar(tag, index, epoch)
+
+            # save best weight
+            if test_indexs[-1] > best_acc:
+                best_acc = test_indexs[-1]
+                torch.save({'model': model.state_dict(), 'epoch': epoch}, best)
+        # save last weight
+        torch.save({'model': model.state_dict(), 'epoch': epoch}, last)
 
     return
 
 def test(test_loader, model, param_dict):
+    confusion_matrix = np.zeros([param_dict['class_number'], param_dict['class_number']], dtype=np.int64)
 
     cross_entropy = nn.CrossEntropyLoss()  # 已经经过mean
 
@@ -58,12 +77,20 @@ def test(test_loader, model, param_dict):
         for step, data in enumerate(test_loader):
             images, labels = data
             inputs = inputs.cuda()
-            labels = labels.cuda()
+            labels_cuda = labels.cuda()
             outputs = model(inputs)
-            loss = cross_entropy(outputs, labels)
+            loss = cross_entropy(outputs, labels_cuda)
+            # compute confusion matrix
+            outputs_p = F.softmax(outputs, dim=1)  # [N,C,H,W] cuda
+            P = torch.max(outputs_p, 1)[1].data.cpu().numpy()  # [N,H,W] numpy-cpu
+
+            m = get_confusion_matrix(P, labels.data.numpy(), class_number=param_dict['class_number'])
+            confusion_matrix += m
 
             test_loss += loss.cpu().item()
 
-    return test_loss/len(test_loader), test_acc
+    acc, mean_precision, mean_recall, mean_iou = compute_acc_pr_iou(confusion_matrix)
+
+    return test_loss/len(test_loader), (acc, mean_precision, mean_recall, mean_iou)
 
 
