@@ -3,7 +3,7 @@
     author is leilei
     Restart this project from 2017-10-01 
     TODO
-    The latest version of the code cannot be executed and is still being updated.
+    The training code can be executed, but the demo code is not completed.
 ```
 
 ### Environment
