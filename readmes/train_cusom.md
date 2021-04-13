@@ -7,8 +7,8 @@
 
 <details>
   <summary>Figure Notes (click to expand)</summary>
-  + ![modify1](./main_modify.jpg)
-  + ![modify2](./param_modify.jpg)
+  <p align="left"><img width="400" src="https://github.com/gengyanlei/segmentation_pytorch/blob/master/readmes/main_modify.jpg"></p>
+  <p align="left"><img width="400" src="https://github.com/gengyanlei/segmentation_pytorch/blob/master/readmes/param_modify.jpg"></p>
 </details>
 
 #### Test
