@@ -24,6 +24,7 @@ def main(args):
     save_dir = increment_path(args.project)  # str
     check_path(save_dir)
     param_dict['save_dir'] = save_dir  # update to param_dict
+    param_dict['model_name'] = args.model_name  # update to param_dict
     # tensorboard
     tb_writer = SummaryWriter(save_dir)
 
@@ -57,7 +58,7 @@ def main(args):
     lf = lambda x: ((1 + math.cos(x * math.pi / param_dict['epoches'])) / 2) * (1 - param_dict['lrf']) + param_dict['lrf']  # cosine
     scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)  # no save scheduler params
 
-    # TODO train  test  metrics
+    # train stage
     train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, continue_epoch)
 
     return
