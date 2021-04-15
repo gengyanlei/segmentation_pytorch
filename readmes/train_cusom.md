@@ -2,7 +2,7 @@
 
 #### Train
 + [Note](https://github.com/gengyanlei/segmentation_pytorch#note): 0 is the background, and the object category starts from 1!
-+ You need to prepare the data in the format of [Dataset Details](.#dataset-details).
++ You need to prepare the data in the format of [Dataset Details](https://github.com/gengyanlei/segmentation_pytorch/blob/master/readmes/train_cusom.md#dataset-details).
 + Modify the configuration file parameters [parameter.yaml](../configs/parameter.yaml).
 + Modify [main.py](../main.py) args's params and model-network-code.
 
