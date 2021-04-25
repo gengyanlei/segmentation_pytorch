@@ -59,9 +59,19 @@ def train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, conti
             # save best weight
             if test_indexs[-1] > best_acc:
                 best_acc = test_indexs[-1]
-                torch.save({'model': model.state_dict(), 'epoch': epoch, 'model_name': param_dict['model_name']}, best)
+                torch.save({'model': model.state_dict(),
+                            'epoch': epoch,
+                            'model_name': param_dict['model_name'],
+                            'optimizer': optimizer.state_dict()}, best)
         # save last weight
-        torch.save({'model': model.state_dict(), 'epoch': epoch, 'model_name': param_dict['model_name']}, last)
+        torch.save({'model': model.state_dict(),
+                    'epoch': epoch,
+                    'model_name': param_dict['model_name'],
+                    'optimizer': optimizer.state_dict()}, last)
+
+    # end training, last delete epoch etl information
+    torch.save({'model': model.state_dict(),
+                'model_name': param_dict['model_name']}, last)
 
     return
 
