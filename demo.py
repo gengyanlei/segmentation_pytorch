@@ -57,6 +57,7 @@ def predict(args, save_img=True):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Semantic segmentation Predict")
     parser.add_argument("--weights", type=str, default=r'./runs/exp/weights/best.pt', help="weight's path")
+    parser.add_argument("--cfg_path", type=str, default=r'./configs/parameter.yaml', help="config param")
     parser.add_argument("--source", type=str, default=r'./data/images', help="input source")
     parser.add_argument("--device", type=str, default='0', help="gpu id, suggest 1 gpu")
     parser.add_argument("--output", type=str, default=r'./outputs', help="save dir")
