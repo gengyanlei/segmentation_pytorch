@@ -40,10 +40,10 @@ def main(args):
     if args.resume:
         model_dict = model.state_dict()
         pretrained_file = torch.load(args.resume)
-        pretrained_dict = pretrained_file['model']
+        pretrained_dict = pretrained_file['model'].float().state_dict()
         continue_epoch = pretrained_file['epoch']
         pretrained_dict = {k[7:]: v for k, v in pretrained_dict.items() if k[7:] in model_dict and v.size()==model_dict[k[7:]].size()}
-        assert len(pretrained_dict)==len(model_dict), "Unsuccessful import weight"
+        assert len(pretrained_dict) == len(model_dict), "Unsuccessful import weight"
         model_dict.update(pretrained_dict)
         model.load_state_dict(model_dict)
     model = nn.DataParallel(model)  # keys add '.module', and has .module attribute
