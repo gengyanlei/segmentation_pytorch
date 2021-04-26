@@ -3,17 +3,17 @@
     author is leilei
     Restart this project from 2017-10-01 
     
-    The training code can be executed, but the demo code is not completed.
+    Now the 1.alpha.0 version has been basically completed, to be tested.
     TODO
-    等待demo.py完成后，即可为 v1 版本，v2版本会增加dist，以及优化代码！
+    Add distributed and optimize code.
 ```
 
 ### Environment
 ```
     python: 3.6+
     ubuntu16.04 or 18.04
-    pytorch 1.6+ (cuda10.2 docker)
-    tensorboard 2.0+
+    pytorch 1.6 (cuda10.2 docker)
+    tensorboard 2.0
     scikit-learn 0.24.1
 ```
 
@@ -26,7 +26,7 @@
 + [How to Use](./readmes/train_cusom.md)
 
 ### Demo
-+ TODO
++ Just see [demo.py](./demo.py)
 
 ### Support Network
 - [x] [deeplab_v3_plus](models/deeplab_v3_plus.py)
