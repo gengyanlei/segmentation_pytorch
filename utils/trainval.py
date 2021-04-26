@@ -21,7 +21,7 @@ def train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, conti
     for epoch in range(0, continue_epoch):
         scheduler.step()
 
-    best_acc = 0
+    best_fitness = 0
     for epoch in range(continue_epoch, param_dict['epoches']):
         model.train()
         scheduler.step()
@@ -55,23 +55,26 @@ def train(data_loader, model, optimizer, scheduler, tb_writer, param_dict, conti
             tags = ['Metrics/Accuracy', 'Metrics/Mean_Precision', 'Metrics/Mean_Recall', 'Metrics/Mean_IoU']
             for tag, index in zip(tags, test_indexs):
                 tb_writer.add_scalar(tag, index, epoch)
-
+            # TODO best_fitness=w1*acc+w2*precision+w3*recall+w4*mean_iou
             # save best weight
-            if test_indexs[-1] > best_acc:
-                best_acc = test_indexs[-1]
+            if test_indexs[-1] > best_fitness:
+                best_fitness = test_indexs[-1]
                 torch.save({'model': model.state_dict(),
                             'epoch': epoch,
                             'model_name': param_dict['model_name'],
-                            'optimizer': optimizer.state_dict()}, best)
+                            'optimizer': optimizer.state_dict(),
+                            'best_fitness': best_fitness}, best)
         # save last weight
         torch.save({'model': model.state_dict(),
                     'epoch': epoch,
                     'model_name': param_dict['model_name'],
-                    'optimizer': optimizer.state_dict()}, last)
+                    'optimizer': optimizer.state_dict(),
+                    'best_fitness': best_fitness if param_dict['test_interval'] == 1 else None}, last)
 
     # end training, last delete epoch etl information
     torch.save({'model': model.state_dict(),
-                'model_name': param_dict['model_name']}, last)
+                'model_name': param_dict['model_name'],
+                'optimizer': None}, last)
 
     return
 
