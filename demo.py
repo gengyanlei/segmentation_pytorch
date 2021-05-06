@@ -29,8 +29,9 @@ def predict(args, save_img=True):
     device = torch.device("cuda:{}".format(args.device))
     model = torch.load(args.weights, map_location=device)['model'].eval()  # if fail, before eval() add .to(device)
 
-    # label color
-    colors = [[random.randint(0, 255) for _ in range(3)] for _ in class_names]
+    # label color, _background_->(0,0,0)
+    colors = [[random.randint(0, 255) for _ in range(3)] for _ in class_names[1:]]
+    colors.insert(0, [0,0,0])
 
     # imread image
     names = os.listdir(args.source)
