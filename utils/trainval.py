@@ -5,6 +5,7 @@ import torch
 import numpy as np
 from torch import nn
 from pathlib import Path
+from utils.plots import plot_confusion_matrix
 from utils.metrics import get_confusion_matrix, compute_acc_pr_iou
 import torch.nn.functional as F
 
@@ -101,6 +102,8 @@ def test(test_loader, model, param_dict):
             confusion_matrix += m
 
             test_loss += loss.cpu().item()
+    # plot confusion_matrix and save
+    plot_confusion_matrix(confusion_matrix, param_dict['save_dir'], param_dict['class_names'])
 
     acc, mean_precision, mean_recall, mean_iou = compute_acc_pr_iou(confusion_matrix)
 

@@ -41,7 +41,7 @@ def main(args):
         model_dict = model.state_dict()
         pretrained_file = torch.load(args.resume)
         pretrained_dict = pretrained_file['model'].float().state_dict()
-        continue_epoch = pretrained_file['epoch']
+        continue_epoch = pretrained_file['epoch'] if 'epoch' in pretrained_file else 0
         pretrained_dict = {k[7:]: v for k, v in pretrained_dict.items() if k[7:] in model_dict and v.size()==model_dict[k[7:]].size()}
         assert len(pretrained_dict) == len(model_dict), "Unsuccessful import weight"
         model_dict.update(pretrained_dict)
