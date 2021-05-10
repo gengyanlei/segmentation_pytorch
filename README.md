@@ -28,6 +28,10 @@
 ### Demo
 + Just see [demo.py](./demo.py)
 
+### Evaluation index
++ Just see [metrics.py](./utils/metrics.py)
++ Support acc, mean_precision, mean_recall, mean_iou
+
 ### Support Network
 - [x] [deeplab_v3_plus](models/deeplab_v3_plus.py)
 - [x] [pspnet](models/pspnet.py)
